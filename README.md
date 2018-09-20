@@ -11,3 +11,4 @@ This is an internal module. Have a look at the following modules instead:
 ## Limitations
 
 * Scalable: RDS instances capacity (CPU, RAM, network, ...) is limited by design
+* Monitoring: Network In+Out is not monitored according to capacity of instance type
