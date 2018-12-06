@@ -75,7 +75,7 @@ Parameters:
     Type: String
     Default: true
   SubDomainNameWithDot:
-    Description: 'Name that is used to create the DNS entry with trailing dot, e.g. ${SubDomainNameWithDot}${HostedZoneName}. Leave blank for naked (or apex and bare) domain. Requires HostedZoneModule parameter!'
+    Description: 'Name that is used to create the DNS entry with trailing dot, e.g. §{SubDomainNameWithDot}§{HostedZoneName}. Leave blank for naked (or apex and bare) domain. Requires HostedZoneModule parameter!'
     Type: String
 Conditions:
   HasAlertingModule: !Not [!Equals [!Ref AlertingModule, '']]
