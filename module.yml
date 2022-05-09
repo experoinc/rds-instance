@@ -80,6 +80,14 @@ Parameters:
     Description: 'Enable mapping of AWS Identity and Access Management (IAM) accounts to database accounts (https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.IAMDBAuth.html).'
     Type: String
     AllowedValues: ['true', 'false']
+  DBParameterGroupName:
+    Description: 'Optional DB Parameter Group to assign to the RDS instance being created.'
+    Type: String
+    Default: ''
+  LambdaExecutionRoleArn:
+    Description: 'Role to be added as feature name Lambda for the RDS instance being created.'
+    Type: String
+    Default: ''
 Conditions:
   HasAlertingModule: !Not [!Equals [!Ref AlertingModule, '']]
   HasHostedZoneModule: !Not [!Equals [!Ref HostedZoneModule, '']]
@@ -87,6 +95,8 @@ Conditions:
   HasKmsKeyModule: !Not [!Equals [!Ref KmsKeyModule, '']]
   HasDBSnapshotIdentifier: !Not [!Equals [!Ref DBSnapshotIdentifier, '']]
   HasKmsKeyModuleAndNotDBSnapshotIdentifier: !And [!Condition HasKmsKeyModule, !Not [!Condition HasDBSnapshotIdentifier]]
+  HasDBParameterGroupName: !Not [!Equals [!Ref DBParameterGroupName, '']]
+  HasLambdaExecutionRole: !Not [!Equals [!Ref LambdaExecutionRoleArn, '']]
 Resources:
   RecordSet:
     Condition: HasHostedZoneModule
@@ -155,6 +165,13 @@ Resources:
       StorageEncrypted: !If [HasDBSnapshotIdentifier, !Ref 'AWS::NoValue', !If [HasKmsKeyModule, true, false]]
       VPCSecurityGroups:
       - !Ref SecurityGroup
+      DBParameterGroupName: !If [HasDBParameterGroupName, !Ref DBParameterGroupName, !Ref 'AWS::NoValue']
+      AssociatedRoles:
+        !If
+        - HasLambdaExecutionRole
+        - - FeatureName: Lambda
+            RoleArn: !Ref LambdaExecutionRoleArn
+        - !Ref "AWS::NoValue"
   AlarmBurstBalanceTooLow:
     Condition: HasAlertingModule
     Type: 'AWS::CloudWatch::Alarm'
