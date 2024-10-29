@@ -88,6 +88,11 @@ Parameters:
     Description: 'Role to be added as feature name Lambda for the RDS instance being created.'
     Type: String
     Default: ''
+  AllowPostgresMajorVersionUpgrade:
+    Description: 'If an upgrade to a major version of Postgres is allowed.'
+    Type: String
+    AllowedValues: ['true', 'false']
+    Default: 'false'
 Conditions:
   HasAlertingModule: !Not [!Equals [!Ref AlertingModule, '']]
   HasHostedZoneModule: !Not [!Equals [!Ref HostedZoneModule, '']]
@@ -144,7 +149,7 @@ Resources:
     Type: 'AWS::RDS::DBInstance'
     Properties:
       AllocatedStorage: !If [HasDBSnapshotIdentifier, !Ref 'AWS::NoValue', !Ref DBAllocatedStorage]
-      AllowMajorVersionUpgrade: false
+      AllowMajorVersionUpgrade: !Ref AllowPostgresMajorVersionUpgrade
       AutoMinorVersionUpgrade: true
       BackupRetentionPeriod: !Ref DBBackupRetentionPeriod
       CopyTagsToSnapshot: true
